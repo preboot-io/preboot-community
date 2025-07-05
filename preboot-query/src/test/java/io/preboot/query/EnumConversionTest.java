@@ -2,10 +2,10 @@ package io.preboot.query;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.preboot.query.config.TestContainersConfig;
 import io.preboot.query.testdata.OrderStatus;
 import io.preboot.query.testdata.TestOrder;
 import io.preboot.query.testdata.TestOrderRepository;
-import io.preboot.query.config.TestContainersConfig;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,30 +27,25 @@ public class EnumConversionTest {
     @Test
     void testEnumEquality_WithEnumValue_ShouldConvertToString() {
         // Given - use existing test data that has status 'COMPLETED'
-        SearchParams params = SearchParams.criteria(
-            FilterCriteria.eq("status", OrderStatus.COMPLETED)
-        ).build();
+        SearchParams params = SearchParams.criteria(FilterCriteria.eq("status", OrderStatus.COMPLETED))
+                .build();
 
         // When
         Page<TestOrder> result = orderRepository.findAll(params);
 
         // Then
         assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getContent())
-            .extracting(TestOrder::getStatus)
-            .containsOnly("COMPLETED");
+        assertThat(result.getContent()).extracting(TestOrder::getStatus).containsOnly("COMPLETED");
     }
 
     @Test
     void testEnumEquality_BothEnumAndString_ShouldProduceSameResults() {
         // Given
-        SearchParams enumParams = SearchParams.criteria(
-            FilterCriteria.eq("status", OrderStatus.PENDING)
-        ).build();
-        
-        SearchParams stringParams = SearchParams.criteria(
-            FilterCriteria.eq("status", "PENDING")
-        ).build();
+        SearchParams enumParams = SearchParams.criteria(FilterCriteria.eq("status", OrderStatus.PENDING))
+                .build();
+
+        SearchParams stringParams =
+                SearchParams.criteria(FilterCriteria.eq("status", "PENDING")).build();
 
         // When
         Page<TestOrder> enumResult = orderRepository.findAll(enumParams);
@@ -60,40 +55,33 @@ public class EnumConversionTest {
         assertThat(enumResult.getContent()).hasSize(2);
         assertThat(stringResult.getContent()).hasSize(2);
         assertThat(enumResult.getContent())
-            .extracting(TestOrder::getOrderNumber)
-            .containsExactlyInAnyOrderElementsOf(
-                stringResult.getContent().stream()
-                    .map(TestOrder::getOrderNumber)
-                    .toList()
-            );
+                .extracting(TestOrder::getOrderNumber)
+                .containsExactlyInAnyOrderElementsOf(stringResult.getContent().stream()
+                        .map(TestOrder::getOrderNumber)
+                        .toList());
     }
 
     @Test
     void testEnumInOperator_WithEnumValues_ShouldWork() {
         // Given
         SearchParams params = SearchParams.criteria(
-            FilterCriteria.in("status", OrderStatus.COMPLETED, OrderStatus.CANCELLED)
-        ).build();
+                        FilterCriteria.in("status", OrderStatus.COMPLETED, OrderStatus.CANCELLED))
+                .build();
 
         // When
         Page<TestOrder> result = orderRepository.findAll(params);
 
         // Then
         assertThat(result.getContent()).hasSize(3);
-        assertThat(result.getContent())
-            .extracting(TestOrder::getStatus)
-            .containsOnly("COMPLETED", "CANCELLED");
+        assertThat(result.getContent()).extracting(TestOrder::getStatus).containsOnly("COMPLETED", "CANCELLED");
     }
 
     @Test
     void testEnumWithAndCondition_ShouldWork() {
         // Given
-        SearchParams params = SearchParams.criteria(
-            FilterCriteria.and(List.of(
-                FilterCriteria.eq("status", OrderStatus.COMPLETED),
-                FilterCriteria.gt("amount", 200)
-            ))
-        ).build();
+        SearchParams params = SearchParams.criteria(FilterCriteria.and(
+                        List.of(FilterCriteria.eq("status", OrderStatus.COMPLETED), FilterCriteria.gt("amount", 200))))
+                .build();
 
         // When
         Page<TestOrder> result = orderRepository.findAll(params);
@@ -106,9 +94,8 @@ public class EnumConversionTest {
     @Test
     void testCountWithEnumFilter_ShouldWork() {
         // Given
-        SearchParams params = SearchParams.criteria(
-            FilterCriteria.eq("status", OrderStatus.COMPLETED)
-        ).build();
+        SearchParams params = SearchParams.criteria(FilterCriteria.eq("status", OrderStatus.COMPLETED))
+                .build();
 
         // When
         long count = orderRepository.count(params);
@@ -120,12 +107,9 @@ public class EnumConversionTest {
     @Test
     void testCountWithComplexEnumFilter_ShouldWork() {
         // Given
-        SearchParams params = SearchParams.criteria(
-            FilterCriteria.and(List.of(
-                FilterCriteria.eq("status", OrderStatus.COMPLETED),
-                FilterCriteria.gte("amount", 300)
-            ))
-        ).build();
+        SearchParams params = SearchParams.criteria(FilterCriteria.and(
+                        List.of(FilterCriteria.eq("status", OrderStatus.COMPLETED), FilterCriteria.gte("amount", 300))))
+                .build();
 
         // When
         long count = orderRepository.count(params);
@@ -137,17 +121,14 @@ public class EnumConversionTest {
     @Test
     void testEnumNotEquals_WithEnumValue_ShouldWork() {
         // Given
-        SearchParams params = SearchParams.criteria(
-            FilterCriteria.neq("status", OrderStatus.COMPLETED)
-        ).build();
+        SearchParams params = SearchParams.criteria(FilterCriteria.neq("status", OrderStatus.COMPLETED))
+                .build();
 
         // When
         Page<TestOrder> result = orderRepository.findAll(params);
 
         // Then
         assertThat(result.getContent()).hasSize(3);
-        assertThat(result.getContent())
-            .extracting(TestOrder::getStatus)
-            .containsOnly("PENDING", "CANCELLED");
+        assertThat(result.getContent()).extracting(TestOrder::getStatus).containsOnly("PENDING", "CANCELLED");
     }
 }

@@ -6,12 +6,11 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class BeanValidator {
+    private BeanValidator() {}
 
-    public <T> void validate(T object) {
+    public static <T> void validate(T object) {
         try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = validatorFactory.getValidator();
             final Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);

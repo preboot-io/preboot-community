@@ -155,13 +155,13 @@ public class SimpleExpression implements CriteriaExpression {
         if (value instanceof Enum<?>) {
             return ((Enum<?>) value).name();
         }
-        
+
         // Handle Instant values by converting them to java.sql.Timestamp
         // This ensures proper parameter binding with JDBC drivers and maintains precision
         if (value instanceof Instant) {
             return java.sql.Timestamp.from((Instant) value);
         }
-        
+
         if (value instanceof String) {
             String stringValue = (String) value;
             Class<?> targetType = property.getType();

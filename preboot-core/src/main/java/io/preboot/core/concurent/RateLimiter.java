@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 /** Limits the rate of API calls for specific keys. Uses Token Bucket algorithm to control request flow. */
-@Slf4j
 public class RateLimiter {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(RateLimiter.class);
 
     private final int defaultRateLimit;
     private final Map<String, TokenBucket> buckets = new ConcurrentHashMap<>();
